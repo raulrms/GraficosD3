@@ -1,83 +1,190 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
+<html>
+
+<head>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js"></script>
+</head>
+
+<body>
+  <h2>Gráfico de Barras sobre el Informe PISA de 2015 para España y Comunidades Autónomas.</h2>
+
+  <p>Para esta actividad se han obtenido los datos del Informe PISA de 2015 para España y las Comunidades Autónomas para la asignatura de Ciencias. Se han obtenido estos datos de la web de la Organización para la Cooperación y el Desarrollo Económicos OCDE
+    <a href="http://www.oecd.org/pisa/">http://www.oecd.org/pisa/</a></p>
+
+  <p>Las notas extraídas para la asignatura de Ciencias por comunidades y la media de España son las siguientes:</p>
+
+  <table>
+    <tr>
+      <td><strong>Comunidad</strong></td>
+      <td><strong>Media</strong></td>
+    </tr>
+
+    <tr>
+      <td>Castilla y León</td>
+      <td>519</td>
+    </tr>
+
+    <tr>
+      <td>Madrid</td>
+      <td>516</td>
+    </tr>
+
+    <tr>
+      <td>Galicia</td>
+      <td>512</td>
+    </tr>
+
+    <tr>
+      <td>Navarra</td>
+      <td>512</td>
+    </tr>
+
+    <tr>
+      <td>Aragón</td>
+      <td>508</td>
+    </tr>
+
+    <tr>
+      <td>Cataluña</td>
+      <td>504</td>
+    </tr>
+
+    <tr>
+      <td>Asturias</td>
+      <td>501</td>
+    </tr>
+
+    <tr>
+      <td>La Rioja</td>
+      <td>498</td>
+    </tr>
+
+    <tr>
+      <td>Castilla la Mancha</td>
+      <td>497</td>
+    </tr>
+
+    <tr>
+      <td>Cantabria</td>
+      <td>496</td>
+    </tr>
+
+    <tr>
+      <td>Comunidad Valenciana</td>
+      <td>494</td>
+    </tr>
+
+    <tr>
+      <td><strong>España</strong></td>
+      <td><strong>493</strong></td>
+    </tr>
+
+    <tr>
+      <td>Islas Baleares</td>
+      <td>485</td>
+    </tr>
+
+    <tr>
+      <td>Murcia</td>
+      <td>484</td>
+    </tr>
+
+    <tr>
+      <td>País Vasco</td>
+      <td>483</td>
+    </tr>
+
+    <tr>
+      <td>Islas Canarias</td>
+      <td>475</td>
+    </tr>
+
+    <tr>
+      <td>Extremadura</td>
+      <td>474</td>
+    </tr>
+
+    <tr>
+      <td>Andalucía</td>
+      <td>473</td>
+    </tr>
+  </table>
+
+
+  <p>Para representar estos datos en D3 se ha optado por el siguiente diagrama de barras:</p>
+</body>
+
 <style>
-  .bar {
-    fill: steelblue;
-  }
-  
-  .bar:hover {
-    fill: green;
-  }
-  
-  .axis--x path {
-    display: none;
-  }
+
+.bar {
+  fill: steelblue;
+}
+
+.bar:hover {
+  fill: green;
+}
+
+.axis--x path {
+  display: none;
+}
+
 </style>
 <svg width="960" height="500"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
-  var svg = d3.select("svg"),
-    margin = {
-      top: 60,
-      right: 20,
-      bottom: 100,
-      left: 70
-    },
+
+var svg = d3.select("svg"),
+    margin = {top: 60, right: 20, bottom: 100, left: 70},
     width = +svg.attr("width") - margin.left - margin.right,
     height = +svg.attr("height") - margin.top - margin.bottom;
 
-  var x = d3.scaleBand().rangeRound([1, width]).padding(0.1),
+var x = d3.scaleBand().rangeRound([1,width]).padding(0.1),
     y = d3.scaleLinear().rangeRound([height, 0]);
 
-  var g = svg.append("g")
+var g = svg.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  d3.tsv("NotasPisa.tsv", function(d) {
-    d.media = +d.media;
-    return d;
-  }, function(error, data) {
-    if (error) throw error;
+d3.tsv("NotasPisa.tsv", function(d) {
+  d.media = +d.media;
+  return d;
+}, function(error, data) {
+  if (error) throw error;
 
-    x.domain(data.map(function(d) {
-      return d.comunidad;
-    }));
-    y.domain([0, d3.max(data, function(d) {
-      return d.media;
-    })]);
+  x.domain(data.map(function(d) { return d.comunidad; }));
+  y.domain([0, d3.max(data, function(d) { return d.media; })]);
 
-    g.append("g")
+  g.append("g")
       .attr("class", "axis axis--x")
       .attr("transform", "translate(1," + height + ")")
       .call(d3.axisBottom(x))
-      .selectAll("text")
-      .attr("transform", "rotate(45)")
-      .attr("x", "10")
-      .attr("y", "-3")
-      .style("text-anchor", "start");
+  .selectAll("text")
+    .attr("transform", "rotate(45)")
+    .attr("x", "10")
+    .attr("y", "-3")
+    .style("text-anchor", "start");
+	
 
-    g.append("g")
+  g.append("g")
       .attr("class", "axis axis--y")
       .call(d3.axisLeft(y))
-      .append("text")
+    .append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", 6)
       .attr("dy", "2em")
       .attr("text-anchor", "end")
       .text("media");
 
-    g.selectAll(".bar")
-      .data(data)
-      .enter().append("rect")
+  g.selectAll(".bar")
+    .data(data)
+    .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", function(d) {
-        return x(d.comunidad);
-      })
-      .attr("y", function(d) {
-        return y(d.media);
-      })
+      .attr("x", function(d) { return x(d.comunidad); })
+      .attr("y", function(d) { return y(d.media); })
       .attr("width", x.bandwidth())
-      .attr("height", function(d) {
-        return height - y(d.media);
-      });
-  });
+      .attr("height", function(d) { return height - y(d.media); });
+});
+
 </script>
+
+</html>
